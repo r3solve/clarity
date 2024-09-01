@@ -1,5 +1,5 @@
 const fetchCompletion = async (msg:string, role:string) => {
-  const groqApiKey = "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";
+  const groqApiKey = "";
 
   const data = {
     messages: [
