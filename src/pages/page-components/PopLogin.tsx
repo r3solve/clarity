@@ -1,71 +1,100 @@
-import React, { useState } from 'react';
-import { FaUser, FaLock } from 'react-icons/fa';
-import { useHomeStore } from '../Home/homestore';
-function PopLogin() {
-  const [isOpen, setIsOpen] = useState(false);
-  const {showPop, togglePop} = useHomeStore();
+import React, { useState } from "react";
+import { IoMdClose } from "react-icons/io";
+
+function PopLogin({ onAction }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Basic validation
+    if (!email || !password) {
+      setErrorMessage("Please fill in all fields.");
+      return;
+    }
+    // Here you would typically handle the login logic
+    console.log("Logging in with:", { email, password });
+    // Clear fields after submission (optional)
+    setEmail("");
+    setPassword("");
+    onAction(); // Close the modal after submission
+  };
 
   return (
-    <div className="relative">
-      <button 
-        onClick={()=>togglePop()} 
-        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+    <div>
+      <button
+        onClick={onAction}
+        className="ms-[85%] hover:rounded-full hover:bg-gray-300 p-1 active:ring-gray-500"
       >
-        Login
+        <IoMdClose size={40} color="black" />
       </button>
 
-      {showPop && (
-        <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-gray-900 bg-opacity-50">
-          <div className="bg-white p-6 rounded shadow-lg w-96">
-            <h2 className="text-lg font-semibold mb-4">Login</h2>
-            <form>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700" htmlFor="username">
-                  Username
-                </label>
-                <div className="flex items-center border border-gray-300 rounded">
-                  <FaUser className="p-2 text-gray-400" />
-                  <input
-                    type="text"
-                    id="username"
-                    className="flex-1 p-2 outline-none"
-                    placeholder="Enter your username"
-                  />
-                </div>
-              </div>
+      <div className="mx-4 p-3 overflow-y-auto max-h-[70vh]">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          <h2 className="text-2xl font-semibold text-center mb-4">Login</h2>
 
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700" htmlFor="password">
-                  Password
-                </label>
-                <div className="flex items-center border border-gray-300 rounded">
-                  <FaLock className="p-2 text-gray-400" />
-                  <input
-                    type="password"
-                    id="password"
-                    className="flex-1 p-2 outline-none"
-                    placeholder="Enter your password"
-                  />
-                </div>
-              </div>
+          {errorMessage && (
+            <div className="mb-4 text-red-600 text-sm text-center">
+              {errorMessage}
+            </div>
+          )}
 
-              <button 
-                type="submit" 
-                className="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-              >
-                Login
-              </button>
-              <button 
-                type="button" 
-                onClick={togglePopup} 
-                className="mt-2 w-full text-center text-gray-500 hover:underline"
-              >
-                Cancel
-              </button>
-            </form>
+          <div>
+            <label
+              htmlFor="email"
+              className="block mb-2 text-sm font-medium text-gray-900"
+            >
+              Your Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
+                focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+              placeholder="name@company.com"
+              required
+            />
           </div>
-        </div>
-      )}
+
+          <div>
+            <label
+              htmlFor="password"
+              className="block mb-2 text-sm font-medium text-gray-900"
+            >
+              Your Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
+                focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+              placeholder="••••••••"
+              required
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="text-center mx-[30%] mt-10 w-32 text-white bg-gray-700 p-2 hover:bg-gray-500 rounded-full transition duration-200"
+          >
+            Login
+          </button>
+
+          <div className="text-sm font-medium text-gray-500">
+            Don't have an account?{" "}
+            <a href="#" className="text-blue-700 hover:underline">
+              Sign Up
+            </a>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

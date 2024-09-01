@@ -1,46 +1,99 @@
-import React from 'react';
-import { FaPlus } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+import React from "react";
+import { FaPlus } from "react-icons/fa";
+import { Link, Outlet } from "react-router-dom";
+import Draggable from "react-draggable";
+import { IoPencilSharp } from "react-icons/io5";
+import { useLocation } from "react-router-dom";
+import { SiQuizlet } from "react-icons/si";
 
-const notesData = [
-    { id: 1, title: 'Note 1', content: 'This is the content of note 1.' },
-    { id: 2, title: 'Note 2', content: 'This is the content of note 2.' },
-    { id: 3, title: 'Note 3', content: 'This is the content of note 3.' },
-    { id: 4, title: 'Note 4', content: 'This is the content of note 4.' },
-    { id: 5, title: 'Note 5', content: 'This is the content of note 5.' },
-    { id: 2, title: 'Note 2', content: 'This is the content of note 2.' },
-    { id: 3, title: 'Note 3', content: 'This is the content of note 3.' },
-    { id: 4, title: 'Note 4', content: 'This is the content of note 4.' },
-    { id: 5, title: 'Note 5', content: 'This is the content of note 5.' },
-    { id: 2, title: 'Note 2', content: 'This is the content of note 2.' },
-    { id: 3, title: 'Note 3', content: 'This is the content of note 3.' },
-    { id: 4, title: 'Note 4', content: 'This is the content of note 4.' },
-    { id: 5, title: 'Note 5', content: 'This is the content of note 5.' },
-    // Add more notes as needed
+type FlashCard = {
+  id: string;
+  question: string;
+  answer: string;
+  color: string; // Hex Color Code
+};
+
+const flashCardsData: FlashCard[] = [
+  {
+    id: crypto.randomUUID(),
+    question: "What is Newton's First Law?",
+    answer:
+      "An object at rest stays at rest, and an object in motion stays in motion unless acted upon by a net external force.",
+    color: "#FF5733",
+  },
+  {
+    id: crypto.randomUUID(),
+    question: "What is the atomic number of hydrogen?",
+    answer: "The atomic number of hydrogen is 1.",
+    color: "#33FF57",
+  },
+  {
+    id: crypto.randomUUID(),
+    question: "What is photosynthesis?",
+    answer:
+      "Photosynthesis is the process by which green plants use sunlight to synthesize foods with the help of chlorophyll.",
+    color: "#3357FF",
+  },
+  {
+    id: crypto.randomUUID(),
+    question: "What does Einstein's Theory of Relativity state?",
+    answer:
+      "Time and space are linked, and the laws of physics are the same for all observers.",
+    color: "#FF33A1",
+  },
+  // Add more flashcards as needed
 ];
 
 function NotesPage() {
-    return (
-        <div className='w-full h-full'>
-            <div className='flex flex-row flex-shrink w-full'>
-                <Link to={'/notes/edit'} className='mx-3 p-2 bg-gray-300 border-gray-700 border flex flex-row rounded-md text-base'>
-                    New Note
-                    <FaPlus size={20} className='mx-2' color='#808080' />
-                </Link>
+  const location = useLocation();
+  return (
+    <>
+      {location.pathname === "/notes" && (
+        <div className="w-full h-full">
+          <div className="flex flex-row flex-shrink w-full">
+            <Link
+              to={"edit/new"}
+              className="mx-4 px-4 flex items-center justify-center text-center mt-10 text-white bg-gray-700 p-2 hover:bg-gray-500 rounded-full transition duration-200"
+            >
+              New Note
+              <FaPlus size={20} className="mx-2" color="#808080" />
+            </Link>
+            <Link
+              to={"edit/new"}
+              className="mx-4 font-medium px-4 flex items-center justify-center text-center mt-10 text-white bg-gray-700 p-2 hover:bg-gray-500 rounded-full transition duration-200"
+            >
+              Quiz
+              <SiQuizlet size={20} className="mx-2" color="#808080" />
+            </Link>
+          </div>
+          <div className="h-96 overflow-y-auto my-4 rounded-md mx-4 p-4">
+            {/* Grid layout for flashcards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-1">
+              {flashCardsData.map((card) => (
+                <Draggable key={card.id}>
+                  <div
+                    className="relative w-72 mt-4 hover:cursor-pointer rounded-lg shadow-md p-4 transition-transform duration-300"
+                    style={{ backgroundColor: card.color }}
+                  >
+                    <div className="absolute top-0 right-1">
+                      <Link to={`edit/${card.id}`}>
+                        <IoPencilSharp size={30} />
+                      </Link>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-gray-900 font-bold">{card.question}</p>
+                      <p className="text-gray-700 mt-2">{card.answer}</p>
+                    </div>
+                  </div>
+                </Draggable>
+              ))}
             </div>
-            <div className='h-96 overflow-y-auto my-4 rounded-md  mx-4 p-4'>
-                {/* Grid layout for notes */}
-                <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4'>
-                    {notesData.map(note => (
-                        <div key={note.id} className='bg-white h-80 w-72  hover:cursor-pointer rounded-lg shadow-md p-4'>
-                            <h3 className='font-bold text-lg'>{note.title}</h3>
-                            <p className='text-gray-900'>{note.content}</p>
-                        </div>
-                    ))}
-                </div>
-            </div>
+          </div>
         </div>
-    );
+      )}
+      <Outlet />
+    </>
+  );
 }
 
 export default NotesPage;
