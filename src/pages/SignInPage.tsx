@@ -1,26 +1,34 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FaLock } from 'react-icons/fa';
 
 import {useForm} from 'react-hook-form'
-import { signInWithRawCredentials } from '../utilities/firebase';
+import { getUserFromFireStore, signInWithRawCredentials } from '../utilities/firebase';
 import { toast, ToastContainer} from 'react-toastify';
 import {  useNavigate } from 'react-router';
+import Spinner from './page-components/Spinner';
 
 function SignInPage() {
   const {register, reset, handleSubmit, formState:{errors}}  = useForm();
   const navigate = useNavigate()
+  const [loading, setLoading] = useState(false)
   const onFormSubmit = async (data)=> {
-    console.log(data)
+    setLoading(true)
     try {
       const user = await signInWithRawCredentials(data.email, data.password)
+
       if (user){
-        localStorage.setItem('user',JSON.stringify(user))
-        toast.success("Loggin Successfull")
-        navigate("/")
-        return 
+        await getUserFromFireStore(data.email).then((data)=> {
+          localStorage.setItem('user',JSON.stringify(data))
+          navigate("/")
+
+        }).catch((e)=> {
+            toast.error(`${e}`)
+        })
       }
     }catch (err) {
-      alert(err)
+      toast.error(`${err}`)
+    }finally {
+      setLoading(false)
     }
   }
 
@@ -55,9 +63,11 @@ function SignInPage() {
           </div>
           <button
             type="submit"
-            className="w-full bg-gray-700 text-white py-2 hover:bg-gray-600 transition duration-200 text-lg rounded-full p-3"
+            className="w-full  bg-gray-700 text-white py-2 hover:bg-gray-600 transition duration-200 text-lg rounded-full p-3"
           >
-            Sign In
+            { loading ? <Spinner /> : 'Sign In' }
+            {/* Sign In */}
+            
           </button>
         </form>
         <p className="mt-4 text-center text-sm text-gray-600">

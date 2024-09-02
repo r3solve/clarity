@@ -15,14 +15,9 @@ function App() {
  
 
   return (
-    <>
+    <div className='h-screen w-screen'>
     <HomePage />
-    {/* <Routes>
-      <Route path='/u/profile' element={<ProfilePage />} />
-      <Route path='/login' element={<SignInPage />} />
-      <Route  path='/register' element={<SignUpPage />} />
-    </Routes> */}
-    </>
+    </div>
   );
 }
 

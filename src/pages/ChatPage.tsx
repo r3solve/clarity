@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FaArrowAltCircleUp } from "react-icons/fa";
 import { IoIosAttach } from "react-icons/io";
 import { TbCircleLetterCFilled } from "react-icons/tb";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import fetchCompletion from "../utilities/inference";
+import Skeleton from "./page-components/Skeleton";
 
 type Chat = {
   id: number;
@@ -18,8 +19,7 @@ function ChatPage() {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const [isLoggedIn, setLoggedIn] = useState(true); // Assume this is fetched from your auth logic
-
-  const [param, setParams] = useSearchParams();
+  const divRef = useRef<HTMLDivElement>(null);
   const { query } = useParams();
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -32,8 +32,6 @@ function ChatPage() {
   useEffect(() => {
     if (!query) {
       navigate("/"); // Redirect to sign-in page if not logged in
-    } else {
-      // Any additional logic if needed
     }
   }, [query, navigate]);
 
@@ -46,7 +44,10 @@ function ChatPage() {
           sender: "User",
         };
 
-        fetchCompletion(query, "You're a ghanian private tutor. Preparing a student for their WASSCE exams.")
+        fetchCompletion(
+          query,
+          "You're a ghanian private tutor. Preparing a student for their WASSCE exams."
+        )
           .then((res) => {
             let aiResponse = res.choices[0].message.content;
             const aiChat: Chat = {
@@ -80,10 +81,13 @@ function ChatPage() {
       setError(null);
 
       try {
-        const res = await fetchCompletion(newMessage, `You're a ghanian private tutor. 
-        Preparing a student for their WASSCE exams.
+        const res = await fetchCompletion(
+          newMessage,
+          `You're a ghanian private tutor. 
+          Preparing a student for their WASSCE exams.
         format your results well with enough spacing and paragraphs,
-        `);
+        `
+        );
         const aiMessage = res.choices[0].message.content;
         const aiChat: Chat = {
           id: allChats.length + 2,
@@ -107,13 +111,20 @@ function ChatPage() {
     }
   };
 
+  // Scroll to the bottom of the chat whenever allChats changes
+  useEffect(() => {
+    if (divRef.current) {
+      divRef.current.scrollTop = divRef.current.scrollHeight;
+    }
+  }, [allChats]);
+
   if (!isLoggedIn) {
     return null; // Optionally render nothing if the user is not logged in and hasn't been redirected yet
   }
 
   return (
     <div className="w-full flex flex-wrap justify-center py-3">
-      <div className="w-[90%] h-96 max-h-96 overflow-y-auto">
+      <div ref={divRef} className="w-[90%] h-96 max-h-96 overflow-y-auto transition-all">
         {allChats.map((each: Chat) => (
           <div
             key={each.id}
@@ -137,6 +148,7 @@ function ChatPage() {
           </div>
         ))}
         {error && <div className="text-red-500 text-center">{error}</div>}
+        {loading && <Skeleton />}
       </div>
 
       <div className="flex flex-row mx-8 w-4/5">

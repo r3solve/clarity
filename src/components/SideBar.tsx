@@ -8,7 +8,9 @@ import { PiChalkboardTeacherFill } from "react-icons/pi";
 import { LuChevronFirst, LuChevronLast } from "react-icons/lu";
 import { useNavigate } from "react-router-dom";
 import { PiSignInBold } from "react-icons/pi";
-
+import { LuLibrary } from "react-icons/lu";
+import logo from '../assets/clarity-logo.png'
+import { signOutUser } from "../utilities/firebase";
 type SCH = {
   id: number;
   name: string;
@@ -62,11 +64,21 @@ export default function SideBar() {
   const [expanded, setExpanded] = useState(true);
   const [userStored, setUserStored] = useState(null)
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate()
 
   const handleLogOut = () => {
-    setIsOpen(false);
-    setUserStored(null)
-    localStorage.removeItem('user')
+    navigate('/signout')
+    // signOutUser().then((res)=> {
+    //   setIsOpen(false);
+    //   setUserStored(null)
+    //   localStorage.removeItem('user')
+
+    // })
+  }
+
+  const handleToProfile = () => {
+    setIsOpen(false)
+    navigate("/settings/profile")
   }
 
   useEffect(()=> {
@@ -74,26 +86,29 @@ export default function SideBar() {
     if (getUser){
       const user = JSON.parse(getUser)
       setUserStored(user)
+      
     }
   }, [])
 
   return (
     <div
       className={` ${
-        expanded ? "w-52" : "w-20"
+        expanded ? "w-52 max-w-full   " : "w-28"
       } transition-all duration-500 scroll-smooth ease-out h-screen hidden justify-center lg:flex bg-dark-primary`}
     >
       <div className="flex flex-1 flex-col justify-between w-full">
-        <div>
+        <div className="w-full">
           <div className="w-full flex flex-row">
             {expanded && (
-              <h1
+              <div
                 className={`text-2xl lg:mx-11 mt-4 font-bold text-clip font-noto-sans text-white w-full transition-all duration-500  ${
                   expanded ? "w-full" : "w-0 h-0 "
                 } `}
               >
-                Clarity
-              </h1>
+                <h1 className="text-white text-2xl mt-3 font-medium font-noto-sans ">
+                  clarity
+                </h1>
+              </div>
             )}
             <button
               onClick={() => setExpanded((prev) => !prev)}
@@ -108,11 +123,11 @@ export default function SideBar() {
               )}
             </button>
           </div>
-          <nav className="flex flex-col space-y-2 lg:mx-4 mt-8 ">
+          <nav className="flex flex-col space-y-2  ">
             <div className="w-full space-y-2 scroll-smooth transition-all duration-300 lg:mx-3 mt-7  max-h-60 overflow-y-auto">
               <Link to={"/"}>
                 <div className="flex items-center text-white hover:bg-light-dark-50 p-2 rounded transition duration-200">
-                  <PiChalkboardTeacherFill size={20} className="mr-3" />
+                  <PiChalkboardTeacherFill size={25} className="mr-1" />
                   {expanded && (
                     <span className="text-medium font-normal mx-1 font-familjen-grotesk">
                       Ask Me
@@ -122,7 +137,7 @@ export default function SideBar() {
               </Link>
               <Link to="/past-questions">
                 <div className="flex items-center text-white hover:bg-light-dark-50 p-2 rounded transition duration-200">
-                  <PiExam size={20} className="mr-2" />
+                  <PiExam size={25} className="mr-1" />
                   {expanded && (
                     <span className="text-medium font-normal font-familjen-grotesk">
                       Past Questions
@@ -132,7 +147,7 @@ export default function SideBar() {
               </Link>
               <Link to="/notes">
                 <div className="flex items-center text-white hover:bg-light-dark-50 p-2 rounded transition duration-200">
-                  <GiQuill size={30} className="mr-3" />
+                  <GiQuill size={25} className="mr-1" />
                   {expanded && (
                     <span className="text-medium font-normal font-familjen-grotesk">
                       Notes
@@ -140,18 +155,31 @@ export default function SideBar() {
                   )}
                 </div>
               </Link>
-              <Link to="/flash-cards">
-                <div className="flex items-center text-white hover:bg-light-dark-50 p-2 rounded transition duration-200">
-                  <GrNotes className="mr-3" />
+              <Link to="/library">
+                <div className="flex  text-white hover:bg-light-dark-50 p-2 rounded transition duration-200">
+                  <LuLibrary size={25} className="mr-1" />
                   {expanded && (
                     <span className="text-medium font-normal font-familjen-grotesk">
-                      Flash Cards
+                      Library
                     </span>
                   )}
                 </div>
               </Link>
             </div>
-            <div className="w-full px-4 my-4 border-gray-300 border-t-[0.4px] ">
+            {expanded && userStored && (
+              <div className="relative  top-2 border-l-[0.2px] left-5 border-l-slate-300 max-h-52">
+                <div className=" transition-colors h-8 w-full px-4 overflow-hidden p-1 rounded-lg  duration-75 ">
+                  <Link
+                    to={""}
+                    className="text-gray-400 font-normal mx-1  hover:text-white  text-sm"
+                  >
+                    photosynthesis appoache to shitdsafasdsafsafasfasfsfasfasadsfsdfasf
+                  </Link>
+                </div>
+                
+              </div>
+            )}
+            <div className="w-full px-4 my-4 border-gray-300  ">
               {!userStored && (
                 <>
                   <Link to="/signin">
@@ -178,32 +206,36 @@ export default function SideBar() {
               )}
 
               {userStored && (
-                <div className="relative">
+                <div className="relative my-4">
                   <div
                     onClick={() => setIsOpen(!isOpen)}
-                    className="w-full rounded hover:bg-light-dark-50 p-1 h-auto flex flex-row mt-40 cursor-pointer"
+                    className="w-full rounded hover:bg-light-dark-50 p-1 h-auto flex flex-row mt-8 cursor-pointer"
                   >
                     <img
                       className="w-7 rounded-full"
-                      src="https://ui-avatars.com/api/?name=Yelpoea+yahya&format=svg"
+                      src={`https://ui-avatars.com/api/?name=${userStored.email}&format=svg`}
+                      alt="User Avatar"
                     />
-                    <h1 className="text-sm font-medium pt-1 mx-2 text-white">
-                      {"Yelpoea"}
-                    </h1>
-                    <FaCog
-                      color="#cec8c8"
-                      size={20}
-                      className="my-1 rounded-full"
-                    />
+                    {expanded && (
+                      <h1 className="text-sm font-medium pt-1 mx-2 text-white">
+                        {userStored.email.slice(0, 5)}
+                      </h1>
+                    )}
                   </div>
 
                   {isOpen && (
-                    <div className="absolute top-full mt-2 left-10 bg-white shadow-lg rounded-md p-2 w-48">
-                      <ul>
-                        <li className="p-2 hover:bg-gray-200 cursor-pointer">
+                    <div className="absolute top-full mt-2 left-0 bg-white shadow-lg rounded-md p-2 w-48 z-10">
+                      <ul className="flex flex-col">
+                        <li
+                          onClick={handleToProfile}
+                          className="p-2 hover:bg-gray-200 cursor-pointer rounded-md"
+                        >
                           Settings
                         </li>
-                        <li onClick={handleLogOut} className="p-2 hover:bg-gray-200 cursor-pointer">
+                        <li
+                          onClick={handleLogOut}
+                          className="p-2 hover:bg-gray-200 cursor-pointer rounded-md"
+                        >
                           Logout
                         </li>
                       </ul>
@@ -216,8 +248,11 @@ export default function SideBar() {
         </div>
 
         {expanded && (
-          <footer className="text-center font-noto-sans text-gray-400 text-sm lg:mx-11 mb-5">
-            Proudly made in 🇬🇭 &copy; 2024 Clarity Ai. All rights reserved.
+          <footer className="font-noto-sans ml-4 text-gray-400 text-sm  mb-5">
+            <h1 className="font-thin text-center">
+              🇬🇭 &copy; {new Date().getFullYear()} Clarity Ai.
+              <br /> All rights reserved.
+            </h1>
           </footer>
         )}
       </div>

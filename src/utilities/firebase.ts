@@ -1,4 +1,4 @@
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
@@ -10,6 +10,7 @@ import {
   addDoc,
   doc,
   setDoc,
+  getDoc,
 } from "firebase/firestore";
 
 // TODO: Add SDKs for Firebase products that you want to use
@@ -50,8 +51,19 @@ const signInWithRawCredentials = async(email:string, password:string ) => {
     const user = await signInWithEmailAndPassword(auth, email, password)
     return user
   }catch(err){
-    console.log(err)
-    throw new Error("An error Occured")
+    if ((err.code = "auth/invalid-email")){
+      throw new Error("Invalid username or password") 
+      
+  }}
+}
+
+const signOutUser =async() => {
+  try {
+    const res = await signOut(auth)
+    return res
+  }catch(e) {
+    alert("Can't Sign Out")
+    console.log("Error", e)
   }
 }
 
@@ -64,4 +76,17 @@ const uploadDataToFireStore = async (data:any) => {
   return docRef
 }
 
-export {signUpUserWithRawCredentials, uploadDataToFireStore, signInWithRawCredentials}
+const getUserFromFireStore = async (emai:string)=> {
+  const docRef = doc(db, `users/${emai}`)
+  
+  try {
+    const doc = await getDoc(docRef)
+    return doc.data()
+  }catch(e){
+    throw new Error(`${e}`)
+
+  }
+
+}
+
+export {signUpUserWithRawCredentials, uploadDataToFireStore, signInWithRawCredentials, signOutUser, getUserFromFireStore}

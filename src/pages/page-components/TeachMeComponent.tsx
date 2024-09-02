@@ -58,7 +58,7 @@ function TeachMeComponent() {
 
   const handleSendMessage = async () => {
     const uuid = crypto.randomUUID()
-    navigate(`/ask/${uuid}/${newMessage}`)
+    navigate(`/ask/${newMessage}`)
     
   };
 

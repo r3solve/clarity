@@ -68,21 +68,26 @@ function NotesPage() {
           </div>
           <div className="h-96 overflow-y-auto my-4 rounded-md mx-4 p-4">
             {/* Grid layout for flashcards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-1">
+            <div className="grid grid-cols-3 sm:grid-cols-2 md:grid-cols-3 gap-3">
               {flashCardsData.map((card) => (
                 <Draggable key={card.id}>
                   <div
                     className="relative w-72 mt-4 hover:cursor-pointer rounded-lg shadow-md p-4 transition-transform duration-300"
                     style={{ backgroundColor: card.color }}
                   >
-                    <div className="absolute top-0 right-1">
-                      <Link to={`edit/${card.id}`}>
-                        <IoPencilSharp size={30} />
+                    <div className="flex justify-between items-center">
+                      <div className="text-center flex-grow">
+                        <p className="text-gray-900 font-bold">
+                          {card.question}
+                        </p>
+                        <p className="text-gray-700 mt-2">{card.answer}</p>
+                      </div>
+                      <Link
+                        className=" mb-32 hover:scale-125 transition-all duration-150"
+                        to={`edit/${card.id}`}
+                      >
+                        <IoPencilSharp size={20} />
                       </Link>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-gray-900 font-bold">{card.question}</p>
-                      <p className="text-gray-700 mt-2">{card.answer}</p>
                     </div>
                   </div>
                 </Draggable>
